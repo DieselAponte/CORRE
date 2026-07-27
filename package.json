@@ -1,0 +1,22 @@
+{
+  "name": "CORRE",
+  "private": true,
+  "packageManager": "pnpm@10.33.4",
+  "version": "1.0.0",
+  "description": "Campus Rush: 7:00 A.M. Monorepo",
+  "scripts": {
+    "dev": "pnpm --filter \"./apps/*\" --parallel dev",
+    "dev:frontend": "pnpm --filter frontend dev",
+    "dev:backend": "pnpm --filter backend dev",
+    "start": "pnpm --filter \"./apps/*\" --parallel start",
+    "start:frontend": "pnpm --filter frontend start",
+    "start:backend": "pnpm --filter backend start",
+    "build": "pnpm --filter \"./apps/*\" build",
+    "build:frontend": "pnpm --filter frontend build",
+    "build:backend": "pnpm --filter backend build",
+    "typecheck": "pnpm --filter \"./apps/*\" typecheck",
+    "typecheck:frontend": "pnpm --filter frontend typecheck",
+    "typecheck:backend": "pnpm --filter backend typecheck"
+  },
+  "license": "ISC"
+}
