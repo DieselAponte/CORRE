@@ -15,6 +15,15 @@ export interface MediaPipeConfig {
   minFaceDetectionConfidence: number;
   minFacePresenceConfidence: number;
   minFaceTrackingConfidence: number;
+  // Debug & Module Toggle Flags
+  enableDebugOverlay?: boolean;
+  enableLandmarks?: boolean;
+  enableFPSCounter?: boolean;
+  enableLogs?: boolean;
+  enableBriefMetrics?: boolean;
+  enableObjectsDetected?: boolean;
+  enableHandRecognitionDetails?: boolean;
+  enableDiagnosticHistory?: boolean;
 }
 
 export const DEFAULT_VISION_CONFIG: MediaPipeConfig = {
@@ -37,4 +46,13 @@ export const DEFAULT_VISION_CONFIG: MediaPipeConfig = {
   minFaceDetectionConfidence: 0.5,
   minFacePresenceConfidence: 0.5,
   minFaceTrackingConfidence: 0.5,
+  // Debug defaults
+  enableDebugOverlay: true,
+  enableLandmarks: true,
+  enableFPSCounter: true,
+  enableLogs: true,
+  enableBriefMetrics: true,
+  enableObjectsDetected: true,
+  enableHandRecognitionDetails: true,
+  enableDiagnosticHistory: true,
 };

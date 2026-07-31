@@ -7,6 +7,8 @@ export type GestureType =
   | 'GESTURE_ONE'
   | 'GESTURE_TWO'
   | 'GESTURE_THREE'
+  | 'OPEN_HAND'
+  | 'CLOSED_HAND'
   | 'HAND_UP'
   | 'HAND_DOWN'
   | 'FACE_CENTERED'
@@ -50,6 +52,8 @@ export interface DetectionFrameResult {
   hands: HandLandmarks | null;
   pose: PoseLandmarks | null;
   face: FaceLandmarks | null;
+  fps?: number;
+  frameTime?: number;
 }
 
 export interface VisionEvent {

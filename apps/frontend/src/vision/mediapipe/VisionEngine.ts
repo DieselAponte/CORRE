@@ -19,6 +19,12 @@ export class VisionEngine {
   private videoElement: HTMLVideoElement | null = null;
   private lastVideoTime = -1;
 
+  // Real FPS & Frame Time Telemetry
+  private frameTimestamps: number[] = [];
+  private frameTimeHistory: number[] = [];
+  private currentFPS = 0;
+  private avgFrameTime = 0;
+
   private frameListeners: Set<FrameResultCallback> = new Set();
   private statusListeners: Set<VisionStatusCallback> = new Set();
 
@@ -31,6 +37,14 @@ export class VisionEngine {
 
   public getStatus(): VisionStatus {
     return this.status;
+  }
+
+  public getConfig(): MediaPipeConfig {
+    return this.config;
+  }
+
+  public updateConfig(newConfig: Partial<MediaPipeConfig>): void {
+    this.config = { ...this.config, ...newConfig };
   }
 
   public onFrameResult(callback: FrameResultCallback): () => void {
@@ -64,9 +78,15 @@ export class VisionEngine {
       ]);
 
       this.setStatus('READY');
+      if (this.config.enableLogs) {
+        console.log('[VisionEngine] MediaPipe Task Landmarkers successfully initialized.');
+      }
     } catch (err: unknown) {
       const error = err instanceof Error ? err : new Error('Failed to initialize VisionEngine');
       this.setStatus('ERROR', error);
+      if (this.config.enableLogs) {
+        console.error('[VisionEngine] Initialization Error:', error);
+      }
       throw error;
     }
   }
@@ -81,6 +101,8 @@ export class VisionEngine {
     this.videoElement = videoElement;
     this.setStatus('RUNNING');
     this.lastVideoTime = -1;
+    this.frameTimestamps = [];
+    this.frameTimeHistory = [];
     this.processFrame();
   }
 
@@ -115,17 +137,42 @@ export class VisionEngine {
 
     if (video.readyState >= 2 && video.currentTime !== this.lastVideoTime) {
       this.lastVideoTime = video.currentTime;
-      const timestamp = performance.now();
+      const startTime = performance.now();
 
-      const hands = this.handsDetector.detect(video, timestamp);
-      const pose = this.poseDetector.detect(video, timestamp);
-      const face = this.faceDetector.detect(video, timestamp);
+      // 1. Detect MediaPipe Landmarks across modules
+      const hands = this.handsDetector.detect(video, startTime);
+      const pose = this.poseDetector.detect(video, startTime);
+      const face = this.faceDetector.detect(video, startTime);
+
+      // 2. Measure Frame Processing Time (TAREA 2)
+      const endTime = performance.now();
+      const frameDuration = Math.round((endTime - startTime) * 100) / 100;
+
+      // Update frameTime rolling average (last 20 frames)
+      this.frameTimeHistory.push(frameDuration);
+      if (this.frameTimeHistory.length > 20) {
+        this.frameTimeHistory.shift();
+      }
+      const sumFrameTime = this.frameTimeHistory.reduce((a, b) => a + b, 0);
+      this.avgFrameTime = Math.round((sumFrameTime / this.frameTimeHistory.length) * 10) / 10;
+
+      // 3. Measure Real FPS (TAREA 1)
+      this.frameTimestamps.push(endTime);
+      const oneSecondAgo = endTime - 1000;
+      this.frameTimestamps = this.frameTimestamps.filter((ts) => ts >= oneSecondAgo);
+      this.currentFPS = this.frameTimestamps.length;
+
+      if (this.config.enableLogs && frameDuration > 33) {
+        console.warn(`[VisionEngine] High Frame Time detected: ${frameDuration}ms (FPS: ${this.currentFPS})`);
+      }
 
       const frameResult: DetectionFrameResult = {
-        timestamp,
+        timestamp: startTime,
         hands,
         pose,
         face,
+        fps: this.currentFPS,
+        frameTime: this.avgFrameTime,
       };
 
       this.frameListeners.forEach((listener) => listener(frameResult));
