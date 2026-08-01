@@ -31,3 +31,20 @@ export * from './state/GameState';
 export * from './state/PlayerState';
 export * from './state/WaveState';
 export * from './state/VisionState';
+
+// Game Rules (Systems)
+export * from './systems/MovementSystem';
+export * from './systems/SelectionSystem';
+export * from './systems/LifeSystem';
+export * from './systems/ProgressSystem';
+export * from './systems/VictorySystem';
+export * from './systems/ChallengeSystem';
+
+// Flow Coordinators (Managers)
+export * from './managers/GameManager';
+export * from './managers/PlayerManager';
+export * from './managers/WaveManager';
+export * from './managers/GestureManager';
+export * from './managers/ChallengeManager';
+export * from './managers/TimerManager';
+export * from './managers/ScoreManager';
