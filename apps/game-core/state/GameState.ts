@@ -7,13 +7,14 @@ import type { Wave } from '../entities/Wave';
  * GameState
  *
  * Store especializado de Zustand para almacenar el estado persistente del ciclo de vida de la partida.
- * No contiene reglas de negocio ni lógica del juego.
  */
 export interface GameStateValues {
   status: GameStatus;
   currentWave: Wave | null;
   winner: WinnerType;
   remainingTime: number;
+  elapsedTime: number;
+  formattedTime: string;
 }
 
 export interface GameStateActions {
@@ -21,6 +22,7 @@ export interface GameStateActions {
   setCurrentWave: (wave: Wave | null) => void;
   setWinner: (winner: WinnerType) => void;
   setRemainingTime: (time: number) => void;
+  setElapsedTime: (elapsedTime: number, formattedTime: string) => void;
   resetGameState: () => void;
 }
 
@@ -31,6 +33,8 @@ export const initialGameStateValues: GameStateValues = {
   currentWave: null,
   winner: 'NONE',
   remainingTime: 0,
+  elapsedTime: 0,
+  formattedTime: '00:00',
 };
 
 export const gameStateStore = createStore<GameStateStore>()((set) => ({
@@ -39,5 +43,6 @@ export const gameStateStore = createStore<GameStateStore>()((set) => ({
   setCurrentWave: (currentWave) => set({ currentWave }),
   setWinner: (winner) => set({ winner }),
   setRemainingTime: (remainingTime) => set({ remainingTime }),
+  setElapsedTime: (elapsedTime, formattedTime) => set({ elapsedTime, formattedTime }),
   resetGameState: () => set(initialGameStateValues),
 }));

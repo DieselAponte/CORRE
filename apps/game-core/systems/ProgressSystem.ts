@@ -14,6 +14,15 @@ export interface ProgressUpdateResult {
 
 export class ProgressSystem {
   /**
+   * Calcula el porcentaje de avance (0 a 100).
+   */
+  public static computePercentage(currentDistance: number, maxDistance: number): number {
+    if (maxDistance <= 0) return 0;
+    const calc = (currentDistance / maxDistance) * 100;
+    return Math.min(100, Math.max(0, Math.round(calc * 100) / 100));
+  }
+
+  /**
    * Calcula el incremento de progreso e identifica si se superó un checkpoint.
    */
   public static calculateProgress(
@@ -22,7 +31,7 @@ export class ProgressSystem {
     checkpointInterval: number = 25
   ): ProgressUpdateResult {
     const newProgress = Math.min(currentBar.maximumProgress, currentBar.currentProgress + increment);
-    const percentage = Math.round((newProgress / currentBar.maximumProgress) * 100);
+    const percentage = this.computePercentage(newProgress, currentBar.maximumProgress);
     const newCheckpoint = Math.floor(percentage / checkpointInterval);
     const checkpointReached = newCheckpoint > currentBar.currentCheckpoint;
 

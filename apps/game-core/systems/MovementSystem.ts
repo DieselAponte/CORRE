@@ -16,6 +16,13 @@ export interface MovementOptions {
 
 export class MovementSystem {
   /**
+   * Calcula el incremento lineal de distancia recorrida por unidad de tiempo (deltaTime).
+   */
+  public static calculateDistanceIncrement(speed: number, deltaTime: number): number {
+    return Math.max(0, speed * deltaTime);
+  }
+
+  /**
    * Calcula la nueva posición de un objeto en base a una dirección y velocidad.
    */
   public static calculateNewPosition(

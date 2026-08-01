@@ -3,6 +3,7 @@ import TwoPlayersView from '../components/TwoPlayersView';
 import TestingPage from '../pages/TestingPage';
 import OptionsPage from '../pages/OptionsPage';
 import CreditsPage from '../pages/CreditsPage';
+import GameplayLoopDebugPage from '../pages/GameplayLoopDebugPage';
 
 export function AppRouter() {
   return (
@@ -12,6 +13,7 @@ export function AppRouter() {
         <Route path="/testing" element={<TestingPage />} />
         <Route path="/options" element={<OptionsPage />} />
         <Route path="/credits" element={<CreditsPage />} />
+        <Route path="/game-debug" element={<GameplayLoopDebugPage />} />
       </Routes>
     </BrowserRouter>
   );

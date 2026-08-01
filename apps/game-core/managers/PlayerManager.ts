@@ -3,16 +3,18 @@ import { playerStateStore } from '../state/PlayerState';
 import { Player } from '../entities/Player';
 import { LifeSystem } from '../systems/LifeSystem';
 import { MovementSystem } from '../systems/MovementSystem';
+import { ProgressSystem } from '../systems/ProgressSystem';
 import type { DirectionType } from '../types/DirectionType';
 
 /**
  * PlayerManager
  *
- * Coordinador de jugadores. Administra ambos jugadores y sus actualizaciones de vida y movimiento.
+ * Administra el estado del jugador, vidas, progreso y actualización de posición lógica.
  */
 export class PlayerManager {
   private static instance: PlayerManager | null = null;
   private unsubscribers: Array<() => void> = [];
+  private activePlayerId: string | null = null;
 
   public static getInstance(): PlayerManager {
     if (!PlayerManager.instance) {
@@ -37,10 +39,39 @@ export class PlayerManager {
     );
   }
 
-  public registerPlayer(id: string, name: string): Player {
-    const player = new Player({ id, name, status: 'IDLE', lives: 3, score: 0 });
+  public registerPlayer(id: string = 'player-1', name: string = 'Jugador 1'): Player {
+    this.activePlayerId = id;
+    const player = new Player({
+      id,
+      name,
+      status: 'IDLE',
+      lives: 3,
+      score: 0,
+      position: { x: 0, y: 0 },
+    });
+    player.progress.maximumProgress = 250;
     playerStateStore.getState().setPlayer(player);
     return player;
+  }
+
+  public updatePlayerProgress(playerId: string, deltaTime: number, speed: number = 5): void {
+    const player = playerStateStore.getState().players[playerId];
+    if (!player) return;
+
+    const increment = MovementSystem.calculateDistanceIncrement(speed, deltaTime);
+    const progressResult = ProgressSystem.calculateProgress(player.progress, increment);
+
+    player.progress.currentProgress = progressResult.newProgress;
+    player.progress.currentCheckpoint = progressResult.newCheckpoint;
+
+    playerStateStore.getState().setPlayer(player);
+
+    eventBus.publish('PROGRESS_UPDATED', {
+      playerId,
+      currentProgress: progressResult.newProgress,
+      percentage: progressResult.percentage,
+      timestamp: Date.now(),
+    });
   }
 
   public movePlayer(playerId: string, direction: DirectionType, speed: number, deltaTime: number): void {
@@ -63,6 +94,11 @@ export class PlayerManager {
       playerStateStore.getState().updatePlayerStatus(playerId, 'ELIMINATED');
       eventBus.publish('PLAYER_ELIMINATED', { playerId, timestamp: Date.now() });
     }
+  }
+
+  public getActivePlayer(): Player | null {
+    if (!this.activePlayerId) return null;
+    return playerStateStore.getState().players[this.activePlayerId] ?? null;
   }
 
   public cleanUp(): void {

@@ -1,13 +1,18 @@
 /**
  * GameStatus
  *
- * Representa los distintos estados del ciclo de vida general de una partida en Campus Rush: 7:00 A.M.
+ * Representa los distintos estados del ciclo de vida de una partida en Campus Rush: 7:00 A.M.
  */
 export type GameStatus =
+  | 'IDLE'
+  | 'STARTING'
+  | 'RUNNING'
+  | 'WAITING_BUILDING_SELECTION'
+  | 'MINIGAME'
+  | 'FINISHED'
   | 'BOOT'
   | 'MENU'
   | 'CALIBRATION'
-  | 'WAITING_SELECTION'
   | 'PLAYING_CHALLENGE'
   | 'NEXT_WAVE'
   | 'RESULTS'

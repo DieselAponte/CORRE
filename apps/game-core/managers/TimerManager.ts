@@ -1,14 +1,15 @@
 import { gameStateStore } from '../state/GameState';
-import { Timer } from '../entities/Timer';
 
 /**
  * TimerManager
  *
- * Administra el tiempo restante de la partida y cuenta regresiva de desafíos.
+ * Administra el tiempo transcurrido del juego dependiendo exclusivamente del deltaTime recibido en cada tick.
+ * No utiliza setInterval ni setTimeout internos (Único Reloj del Juego).
  */
 export class TimerManager {
   private static instance: TimerManager | null = null;
-  private timer: Timer | null = null;
+  private elapsedTime: number = 0;
+  private isRunning: boolean = false;
 
   public static getInstance(): TimerManager {
     if (!TimerManager.instance) {
@@ -17,26 +18,49 @@ export class TimerManager {
     return TimerManager.instance;
   }
 
-  public startTimer(seconds: number): void {
-    this.timer = new Timer({ initialTime: seconds, isRunning: true });
-    gameStateStore.getState().setRemainingTime(seconds);
+  public startTimer(): void {
+    this.elapsedTime = 0;
+    this.isRunning = true;
+    gameStateStore.getState().setElapsedTime(0, '00:00');
   }
 
-  public tick(secondsPassed: number): void {
-    if (!this.timer || !this.timer.isRunning) return;
+  /**
+   * Avanza el tiempo transcurrido mediante el deltaTime global del bucle.
+   * @param deltaTime Tiempo en segundos transcurrido desde el último tick.
+   */
+  public tick(deltaTime: number): void {
+    if (!this.isRunning) return;
 
-    this.timer.remainingTime = Math.max(0, this.timer.remainingTime - secondsPassed);
-    gameStateStore.getState().setRemainingTime(this.timer.remainingTime);
-
-    if (this.timer.remainingTime <= 0) {
-      this.timer.isRunning = false;
-    }
+    this.elapsedTime += deltaTime;
+    const formatted = this.getFormattedElapsedTime();
+    gameStateStore.getState().setElapsedTime(this.elapsedTime, formatted);
   }
 
-  public stopTimer(): void {
-    if (this.timer) {
-      this.timer.isRunning = false;
-    }
+  public getElapsedTime(): number {
+    return Math.round(this.elapsedTime * 100) / 100;
+  }
+
+  public getFormattedElapsedTime(): string {
+    const totalSeconds = Math.floor(this.elapsedTime);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const mm = String(minutes).padStart(2, '0');
+    const ss = String(seconds).padStart(2, '0');
+    return `${mm}:${ss}`;
+  }
+
+  public pauseTimer(): void {
+    this.isRunning = false;
+  }
+
+  public resumeTimer(): void {
+    this.isRunning = true;
+  }
+
+  public reset(): void {
+    this.elapsedTime = 0;
+    this.isRunning = false;
+    gameStateStore.getState().setElapsedTime(0, '00:00');
   }
 }
 

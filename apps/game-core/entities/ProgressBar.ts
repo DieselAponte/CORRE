@@ -20,7 +20,7 @@ export class ProgressBar {
   constructor(data: ProgressBarData) {
     this.playerId = data.playerId;
     this.currentProgress = data.currentProgress ?? 0;
-    this.maximumProgress = data.maximumProgress ?? 100;
+    this.maximumProgress = data.maximumProgress ?? 250;
     this.currentCheckpoint = data.currentCheckpoint ?? 0;
   }
 

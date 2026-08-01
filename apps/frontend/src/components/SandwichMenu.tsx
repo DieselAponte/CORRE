@@ -8,9 +8,10 @@ interface MenuItem {
 
 const MENU_ITEMS: MenuItem[] = [
   { label: 'Dashboard', path: '/' },
+  { label: 'Prueba de Visión', path: '/testing' },
+  { label: 'Prueba de Gameplay Loop', path: '/game-debug' },
   { label: 'Opciones', path: '/options' },
   { label: 'Créditos', path: '/credits' },
-  { label: 'Página de prueba', path: '/testing' },
 ];
 
 export function SandwichMenu() {
