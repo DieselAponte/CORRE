@@ -48,3 +48,13 @@ export * from './managers/GestureManager';
 export * from './managers/ChallengeManager';
 export * from './managers/TimerManager';
 export * from './managers/ScoreManager';
+
+// Framework de Minijuegos
+export * from './minigames/contracts/IMinigame';
+export * from './minigames/contracts/MinigameConfig';
+export * from './minigames/contracts/MinigameResult';
+export * from './minigames/contracts/MinigameStatus';
+export * from './minigames/implementations/BaseMinigame';
+export * from './minigames/implementations/DummyMinigame';
+export * from './minigames/registry/MinigameRegistry';
+export * from './minigames/factory/MinigameFactory';
